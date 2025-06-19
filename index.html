@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Valkyrie Alerts with Ping Δ</title>
+  <style>
+    body { background: #2f3136; color: #eee; font-family: sans-serif;
+      display: flex; height: 100vh; justify-content: center; align-items: center; }
+    .card { background: #36393f; padding: 20px 30px; border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5); text-align: center; }
+    button { margin-top: 15px; padding: 10px 20px; border: none;
+      border-radius: 4px; background: #5865F2; color: white;
+      font-size: 16px; cursor: pointer; }
+    button:hover { background: #4e5dc8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Send Random Valkyrie Alerts</h2>
+    <button onclick="sendRandomEmbed()">Send Alert</button>
+  </div>
+
+  <script>
+    const WEBHOOK_URL = 'https://discord.com/api/webhooks/1382697884834594906/DTgN-yxVIL_456NPU8Shs0UBEzHzIgfEVq-53AtJtMclcA_zJSx_KfLZUUAeYq3CHdKC'; // your webhook
+    let prevPing = getRandomInt(40,100); // start with initial value
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    function choose(arr) {
+      return arr[getRandomInt(0, arr.length - 1)];
+    }
+    function randomLetter() {
+      return String.fromCharCode(97 + getRandomInt(0,25));
+    }
+    function randomPlaytime() {
+      const h = getRandomInt(0,5), m = getRandomInt(0,59);
+      return `${h}h ${m}m`;
+    }
+
+    async function sendRandomEmbed() {
+      const players   = ['Chickenmix','qlist','EmpireMTR','outgiven'];
+      const checks    = ['Blink','BackTrack','Velocity','Reach','AutoClicker'];
+      const clients   = ['FeatherFabric','LunarClient','Badlion'];
+      const versions  = ['1.8.9','1.7','1.16.4','1.19.1','1.20.1'];
+      const gamemodes = ['Survival','Creative','Spectator','Adventure'];
+      const servers   = ['KITPVP','Practice','FFA','Hub-01'];
+
+      const player      = choose(players);
+      const check       = choose(checks);
+      const letter      = randomLetter();
+      const amount      = getRandomInt(1,10);
+      const server      = choose(servers);
+      const clientBrand = choose(clients);
+      const mcVersion   = choose(versions);
+      const gameMode    = choose(gamemodes);
+      const ping        = getRandomInt(40,200);
+      const tps         = (getRandomInt(1800,2000)/100).toFixed(2);
+      const playtime    = randomPlaytime();
+
+      const pingDelta   = ping - prevPing;
+      prevPing = ping;
+
+      const embed = {
+        title: `${player} | ${check} (${letter}) (x${amount})`,
+        color: 15548997,
+        thumbnail: { url: `` },
+        fields: [
+          { name: 'Server',       value: server,        inline: true },
+          { name: 'Client Brand', value: clientBrand,   inline: true },
+          { name: 'MC Version',   value: mcVersion,     inline: true },
+          { name: 'Ping',         value: `${ping} ms`,   inline: true },
+          { name: 'Ping Delta',       value: `${pingDelta >= 0 ? '+' : ''}${pingDelta} ms`, inline: true },
+          { name: 'GameMode',     value: gameMode,      inline: true },
+          { name: 'TPS',          value: `${tps}`,       inline: true },
+          { name: 'Playtime',     value: playtime,      inline: true },
+          { name: 'Date',         value: new Date().toISOString().replace('T',' ').split('.')[0], inline: false }
+        ],
+        timestamp: new Date().toISOString()
+      };
+
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'Valkyrie',
+          avatar_url: 'https://i.imgur.com/5t6f2uX.jpeg',
+          embeds: [embed]
+        })
+      });
+      alert('✅ Embed sent!');
+    }
+  </script>
+</body>
+</html>
